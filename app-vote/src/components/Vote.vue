@@ -1,11 +1,24 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-       <div class="p-4" v-show="bcConnected && !bcConnectionError">
-            Connected
-            <!--<router-view></router-view>-->
-        </div>
-    <h1>{{ votingStatus }}</h1>
+    <div class="p-4" v-show="this.votingStatus == 0">
+        <h2>User Registration Phase</h2>
+    </div>
+    <div class="p-4" v-show="this.votingStatus == 1">
+        <h2>Proposal Registration Phase</h2>
+    </div>
+    <div class="p-4" v-show="this.votingStatus == 2">
+        <h2>Proposal Registration Phase Finished</h2>
+    </div>
+    <div class="p-4" v-show="this.votingStatus == 3">
+        <h2>Vote Registration Phase</h2>
+    </div>
+    <div class="p-4" v-show="this.votingStatus == 4">
+        <h2>Vote Registration Phase Finished</h2>
+    </div>                
+    <div class="p-4" v-show="this.votingStatus == 5">
+        <h2>Vote Results</h2>
+    </div>
   </div>
 </template>
 
@@ -19,7 +32,7 @@ export default {
 
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App',
+      msg: 'Welcome to Your Vue.js Vote dApp',
       votingStatus: 1000,
       tmoConn: null // contain the intervalID given by setInterval
     }
