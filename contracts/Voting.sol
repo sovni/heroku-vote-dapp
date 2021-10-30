@@ -129,7 +129,7 @@ contract Voting is Ownable{
         return proposals[winningProposalId].description;
     }
 
-    function getWinnngVotes() public view returns (uint) {
+    function getWinningVotes() public view returns (uint) {
         require(votingStatus == WorkflowStatus.VotesTallied, "Voting session not finished yet");
         require(winningProposalId > 0, "No vote done - no result");
         return proposals[winningProposalId].voteCount;
@@ -137,5 +137,13 @@ contract Voting is Ownable{
     
     function getVotingStatus() public view returns (WorkflowStatus) {
         return votingStatus;
+    }
+
+    function getNbProposals() public view returns (uint) {
+        return proposalIndex - 1;
+    }
+    function getProposal(uint proposalId) public view returns (string memory) {
+        require(proposalId > 0 && proposalId < proposalIndex, "Incorrect proposal id");
+        return proposals[proposalId].description;
     }
 }
