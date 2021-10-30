@@ -7,7 +7,6 @@
             <InputText v-model="voterAddress" type="text"/>
             <Button label="Enregistrer" class="p-button-sm p-ml-4"  @click="registerVoter()"/>
         </form>        
-        <Listbox :options="voters" optionLabel="Adresses" style="width:15rem" />        
         <Button label="Finish" @click="nextPhase()" />
         <div> {{ msgStatus }} </div>
     </div>
@@ -53,11 +52,22 @@ export default {
   },
 
   methods: {
-    getVotingStatus() {
+    waitContractInit() {
       if (this.blockchainIsConnected()) {
-        //clearInterval(this.tmoConn);
+        clearInterval(this.tmoConn);
         window.bc.contract().getVotingStatus((err, status) => {
           this.votingStatus = status;
+        });
+
+
+        let VoterRegistered = window.bc.contract().VoterRegistered();
+        VoterRegistered.watch((err, result) => {
+          if (err) {
+            console.log('could not get event VoterRegistered()')
+          } else {
+            console.log("voterRegistered event received");
+            console.log(result.args);
+          }
         });
       }
     },
@@ -103,7 +113,7 @@ export default {
       // it tries to get the user list from the blockchian once
       // the connection is established
       this.tmoConn = setInterval(() => {
-        this.getVotingStatus();
+        this.waitContractInit();
       }, 1000);
   }
 }
