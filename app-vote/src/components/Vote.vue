@@ -23,9 +23,14 @@
     </div>
     <div class="p-4" v-show="this.votingStatus == 2">
         <h2>Vote Phase: Proposal Registration Phase Finished</h2>
+        <h3>Please wait before voting</h3>
+        <Button label="Finish" @click="nextPhase()" />
     </div>
     <div class="p-4" v-show="this.votingStatus == 3">
         <h2>Vote Phase: Vote Registration Phase</h2>
+        <Listbox v-model="selectedVote"  :options="proposals" optionLabel="name" style="width:15rem" />
+        <Button label="Confirm Vote" @click="confirmVote()" />
+        <Button label="Finish" @click="nextPhase()" />
     </div>
     <div class="p-4" v-show="this.votingStatus == 4">
         <h2>Vote Phase: Vote Registration Phase Finished</h2>
@@ -59,6 +64,7 @@ export default {
       voterProposal: '',
       msgStatus: '',
       proposals: [],
+      selectedVote: null,
       tmoConn: null // contain the intervalID given by setInterval
     }
   },
@@ -102,7 +108,7 @@ export default {
     },
     updateVotingStatus(status) {
       this.votingStatus = status;
-      if (this.votingStatus == 1) {
+      if (this.votingStatus == 1 || this.votingStatus == 3) {
         this.initProposalList();
       }
     },
@@ -113,6 +119,26 @@ export default {
           window.bc.contract().getVotingStatus((err, status) => {
             if (status == 0) {
               window.bc.contract().startProposalsRegistration({ from: account }, (error, res) => {
+                if (error) reject(error);
+              });
+            }
+            else if (status == 1) {
+              window.bc.contract().stopProposalsRegistration({ from: account }, (error, res) => {
+                if (error) reject(error);
+              });
+            }
+            else if (status == 2) {
+              window.bc.contract().startVotingSession({ from: account }, (error, res) => {
+                if (error) reject(error);
+              });
+            }
+            else if (status == 3) {
+              window.bc.contract().stopVotingSession({ from: account }, (error, res) => {
+                if (error) reject(error);
+              });
+            }
+            else if (status == 4) {
+              window.bc.contract().stopProposalsRegistration({ from: account }, (error, res) => {
                 if (error) reject(error);
               });
             }
@@ -197,6 +223,24 @@ export default {
           if (!found)
             this.proposals.push({name: strProposal, id: proposalId});
         });
+      }
+    },
+    confirmVote() {
+      console.log("vote selected : " + this.selectedVote.id);
+      if (this.blockchainIsConnected()) {
+        window.bc.getMainAccount()
+        .then(account => {
+            window.bc.contract().voting(this.selectedVote.id, { from: account }, (error, txHash) => {
+                if (error) {
+                  this.msgStatus = "Error. Check console logs";
+                  console.error(error);
+                }
+                else
+                  this.msgStatus = "User Vote Sibmitted";
+                //resolve(res);
+            });
+        })
+        .catch(error => reject(error));
       }
     },
   },
