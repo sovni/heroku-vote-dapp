@@ -25,17 +25,19 @@
     </div>
     <div v-show="this.votingStatus == 0">
       <div class="p-d-inline-flex p-flex-row p-mt-2">
-        <Card style="width:600px;height:400px;">
+        <Card style="width:600px;height:400px;" class="p-d-flex">
           <template #title>
           Register new Voter
           </template>
           <template #content>    
-            <form @submit.prevent="registerVoter" class="m-t-2">
-                <InputText v-model="voterAddress" type="text"/>
+            <form @submit.prevent="registerVoter">
+                <InputText v-model="voterAddress" style="width:400px" type="text"/>
                 <Button label="Enregistrer" class="p-button-sm p-ml-2"  @click="registerVoter()"/>
             </form>        
-            <Button label="Finish" @click="nextPhase()" class="p-mt-2" />
             <div> {{ msgStatus }} </div>
+          </template>
+          <template #footer>
+            <Button label="Start Proposal Phase" @click="nextPhase()" class="p-mt-2" />
           </template>
         </Card>
         <Card style="width:600px;height:400px;" class="p-ml-2">
@@ -50,7 +52,7 @@
     </div>
 
     <div v-show="this.votingStatus == 1">
-      <div class="p-d-inline-flex p-flex-row p-mt-2" v-show="this.votingStatus == 1">
+      <div class="p-d-inline-flex p-flex-row p-mt-2">
         <Card style="width:600px;height:400px;">
           <template #title>
             Register new Proposal
@@ -60,7 +62,9 @@
               <InputText v-model="voterProposal" style="width:400px" type="text" class="m-t-2"/>
               <Button label="Enregistrer" class="p-button-sm p-ml-2"  @click="registerProposal()"/>
           </form>
-          <Button label="Finish" @click="nextPhase()" class="p-mt-2" />
+          </template>
+          <template #footer>
+            <Button label="Finish Proposal Phase" @click="nextPhase()" class="p-mt-2" />
           </template>
         </Card>
         <Card style="width:600px;height:400px;" class="p-ml-2">
@@ -80,9 +84,9 @@
           </template>
           <template #content>  
             Please wait before voting phase starts
-            <div>
+          </template>
+          <template #footer>
               <Button label="Start Vote" @click="nextPhase()"  class="p-mt-2"/>
-            </div>
           </template>
       </Card>
     </div>
@@ -95,6 +99,8 @@
           <template #content>  
             <Listbox v-model="selectedVote"  :options="proposals" listStyle="max-height:500px" optionLabel="name" style="width:550px;height:500px" />
             <Button label="Confirm Vote" @click="confirmVote()" class="p-mt-2"/>
+          </template>
+          <template #footer>
             <Button label="Finish Vote" @click="nextPhase()" />
           </template>
       </Card>
@@ -206,7 +212,6 @@ export default {
             this.addProposal(result.args.proposalId);
           }
         });
-
       }
     },
     updateWinningVote() {
