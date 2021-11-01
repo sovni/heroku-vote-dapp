@@ -142,8 +142,13 @@ contract Voting is Ownable{
     function getNbProposals() public view returns (uint) {
         return proposalIndex - 1;
     }
+    
     function getProposal(uint proposalId) public view returns (string memory) {
         require(proposalId > 0 && proposalId < proposalIndex, "Incorrect proposal id");
         return proposals[proposalId].description;
+    }
+
+    function getNbVoters() public view returns (uint) {
+        return nbVoters;
     }
 }

@@ -1,15 +1,15 @@
 <template>
     <div>
-        <h2 class="p-4" v-show="!bcConnected && !bcConnectionError">
+        <h2 v-show="!bcConnected && !bcConnectionError">
             Connecting...
         </h2>
 
-        <div class="p-4" v-show="bcConnected && !bcConnectionError">
+        <div v-show="bcConnected && !bcConnectionError">
             <router-view></router-view>
         </div>
 
-        <div v-show="bcConnectionError" class="m-4 alert alert-danger">
-            <h2 class="pb-4">Error connecting to the blockchain!</h2>
+        <div v-show="bcConnectionError" class="alert alert-danger">
+            <h2>Error connecting to the blockchain!</h2>
 
             <p v-if="errorConnectionMessage">
                 <b>{{ errorConnectionMessage }}</b>
@@ -43,12 +43,7 @@ export default {
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+body {
+  background-color : #dbdbdb;;
 }
 </style>

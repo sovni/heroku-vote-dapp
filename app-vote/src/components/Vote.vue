@@ -1,43 +1,121 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <div class="p-4" v-show="this.votingStatus == 0">
-        <h2>Vote Phase: User Registration</h2>
-        <form @submit.prevent="registerVoter">
-            <InputText v-model="voterAddress" type="text"/>
-            <Button label="Enregistrer" class="p-button-sm p-ml-4"  @click="registerVoter()"/>
-        </form>        
-        <Button label="Finish" @click="nextPhase()" />
-        <div> {{ msgStatus }} </div>
+  <div class="p-flex-column p-m-2">
+
+    <div class="p-mt-2">
+      <h1>{{ msg }}</h1>
     </div>
-    <div class="p-4" v-show="this.votingStatus == 1">
-        <h2>Vote Phase: Proposal Registration Phase</h2>
-        <form >
-            <InputText v-model="voterProposal" type="text"/>
-            <Button label="Enregistrer" class="p-button-sm p-ml-4"  @click="registerProposal()"/>
-        </form>
-        <Button label="Finish" @click="nextPhase()" />
-        <div>
-        <Listbox :options="proposals" optionLabel="name" style="width:15rem" />
-        </div>
+    <div class="p-mt-2">
+      <Card>
+        <template #title>
+          Vote current status
+        </template>
+        <template #content>    
+          <Timeline :value="statusList" layout="horizontal">
+            <template #marker="slotProps">
+              <span class="custom-marker p-shadow-2" :style="{backgroundColor: slotProps.item.color}">
+                <i :class="slotProps.item.icon"></i>
+              </span>
+            </template>
+            <template #content="slotProps">
+              {{slotProps.item.status}}
+            </template>
+          </Timeline>
+        </template>
+      </Card>        
     </div>
-    <div class="p-4" v-show="this.votingStatus == 2">
-        <h2>Vote Phase: Proposal Registration Phase Finished</h2>
-        <h3>Please wait before voting</h3>
-        <Button label="Finish" @click="nextPhase()" />
+    <div v-show="this.votingStatus == 0">
+      <div class="p-d-inline-flex p-flex-row p-mt-2">
+        <Card style="width:600px;height:400px;">
+          <template #title>
+          Register new Voter
+          </template>
+          <template #content>    
+            <form @submit.prevent="registerVoter" class="m-t-2">
+                <InputText v-model="voterAddress" type="text"/>
+                <Button label="Enregistrer" class="p-button-sm p-ml-2"  @click="registerVoter()"/>
+            </form>        
+            <Button label="Finish" @click="nextPhase()" class="p-mt-2" />
+            <div> {{ msgStatus }} </div>
+          </template>
+        </Card>
+        <Card style="width:600px;height:400px;" class="p-ml-2">
+          <template #title>
+          Number of voters
+          </template>
+          <template #content>
+            {{ nbVoters }}
+          </template>
+        </Card>
+      </div>
     </div>
-    <div class="p-4" v-show="this.votingStatus == 3">
-        <h2>Vote Phase: Vote Registration Phase</h2>
-        <Listbox v-model="selectedVote"  :options="proposals" optionLabel="name" style="width:15rem" />
-        <Button label="Confirm Vote" @click="confirmVote()" />
-        <Button label="Finish" @click="nextPhase()" />
+
+    <div v-show="this.votingStatus == 1">
+      <div class="p-d-inline-flex p-flex-row p-mt-2" v-show="this.votingStatus == 1">
+        <Card style="width:600px;height:400px;">
+          <template #title>
+            Register new Proposal
+          </template>
+          <template #content>    
+          <form >
+              <InputText v-model="voterProposal" style="width:400px" type="text" class="m-t-2"/>
+              <Button label="Enregistrer" class="p-button-sm p-ml-2"  @click="registerProposal()"/>
+          </form>
+          <Button label="Finish" @click="nextPhase()" class="p-mt-2" />
+          </template>
+        </Card>
+        <Card style="width:600px;height:400px;" class="p-ml-2">
+          <template #title>
+            Proposal List
+          </template>
+          <template #content>
+            <Listbox :options="proposals" optionLabel="name" listStyle="max-height:300px" style="width:550px;height:300px;" />
+          </template>
+        </Card>
+      </div>   
     </div>
-    <div class="p-4" v-show="this.votingStatus == 4">
-        <h2>Vote Phase: Vote Registration Phase Finished</h2>
-    </div>                
-    <div class="p-4" v-show="this.votingStatus == 5">
-        <h2>Vote Phase: Vote Results</h2>
+    <div v-show="this.votingStatus == 2">
+      <Card style="width:600px;height:400px;" class="p-mt-2">
+         <template #title>
+            Proposal Registration Phase Finished
+          </template>
+          <template #content>  
+            Please wait before voting phase starts
+            <div>
+              <Button label="Start Vote" @click="nextPhase()"  class="p-mt-2"/>
+            </div>
+          </template>
+      </Card>
     </div>
+
+    <div v-show="this.votingStatus == 3">
+      <Card style="width:600px;height:800px;" class="p-mt-2">
+         <template #title>
+            Vote
+          </template>
+          <template #content>  
+            <Listbox v-model="selectedVote"  :options="proposals" listStyle="max-height:500px" optionLabel="name" style="width:550px;height:500px" />
+            <Button label="Confirm Vote" @click="confirmVote()" class="p-mt-2"/>
+            <Button label="Finish Vote" @click="nextPhase()" />
+          </template>
+      </Card>
+    </div>
+
+    <div v-show="this.votingStatus == 4">
+      <h2>Vote Phase: Vote Registration Phase Finished</h2>
+    </div>
+
+    <div v-show="this.votingStatus == 5">
+      <Card class="p-mt-2">
+        <template #title>
+        Results
+        </template>
+        <template #content>  
+          Winning Proposal : {{winningProposal}}
+          <br/>Number of votes : {{nbWinningVotes}}
+        </template>
+      </Card>
+    </div>
+
   </div>
 </template>
 
@@ -47,6 +125,8 @@ import mixin from '../libs/mixinViews';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Listbox from 'primevue/listbox';
+import Card from 'primevue/card';
+import Timeline from 'primevue/timeline';
 
 export default {
   name: 'VoteStatus',
@@ -54,6 +134,8 @@ export default {
   components: {
       InputText,
       Listbox,
+      Card,
+      Timeline,
       Button
   },
   data () {
@@ -62,9 +144,20 @@ export default {
       votingStatus: 1000,
       voterAddress: '',
       voterProposal: '',
+      nbVoters : 0,
       msgStatus: '',
       proposals: [],
       selectedVote: null,
+      winningProposal: '',
+      nbWinningVotes : 0,
+      statusList : [
+                {status: 'User Registration', icon: 'pi pi-circle-off'},
+                {status: 'Proposals Registration', icon: 'pi pi-circle-off'},
+                {status: 'Waiting for vote...', icon: 'pi pi-circle-off'},
+                {status: 'Voting', icon: 'pi pi-circle-off'},
+                {status: 'Calculating Result', icon: 'pi pi-circle-off'},
+                {status: 'Results', icon: 'pi pi-circle-off'},
+      ],
       tmoConn: null // contain the intervalID given by setInterval
     }
   },
@@ -75,6 +168,10 @@ export default {
         clearInterval(this.tmoConn);
         window.bc.contract().getVotingStatus((err, status) => {
           this.updateVotingStatus(status);
+          this.statusList[status].icon = 'pi pi-circle-on';
+          if (this.votingStatus == 5) {
+            this.updateWinningVote();
+          }
         });
 
         let VoterRegistered = window.bc.contract().VoterRegistered();
@@ -84,6 +181,7 @@ export default {
           } else {
             console.log("voterRegistered event received");
             console.log(result.args);
+            this.updateNumberVoters();
           }
         });
         window.bc.contract().WorkflowStatusChange().watch((err, result) => {
@@ -93,6 +191,10 @@ export default {
             console.log("WorkflowStatusChange event received");
             console.log(result.args);
             this.updateVotingStatus(result.args.newStatus);
+            this.statusList[result.args.newStatus].icon = 'pi pi-circle-on';
+            this.statusList[result.args.previousStatus].icon = 'pi pi-circle-off';
+            if (this.votingStatus == 5)
+              this.updateWinningVote();
           }
         });
         window.bc.contract().ProposalRegistered().watch((err, result) => {
@@ -104,12 +206,28 @@ export default {
             this.addProposal(result.args.proposalId);
           }
         });
+
       }
+    },
+    updateWinningVote() {
+      window.bc.contract().getWinningProposal((err, prop) => {
+        this.winningProposal = prop;
+      });
+      window.bc.contract().getWinningVotes((err, nb) => {
+        this.nbWinningVotes = nb;
+      });
     },
     updateVotingStatus(status) {
       this.votingStatus = status;
       if (this.votingStatus == 1 || this.votingStatus == 3) {
         this.initProposalList();
+      }
+    },
+    updateNumberVoters() {
+      if (this.blockchainIsConnected()) {
+        window.bc.contract().getNbVoters((err, nb) => {
+          this.nbVoters = nb;
+        });
       }
     },
     nextPhase() {
@@ -191,6 +309,7 @@ export default {
         //this.proposals = [];
 
         window.bc.contract().getNbProposals((err, nbProposal) => {
+          console.log("Nb proposals : " + nbProposal);
           for (let i=1;i<=nbProposal;i++) {
             window.bc.contract().getProposal(i, (err, strProposal) => {
               console.log(strProposal);

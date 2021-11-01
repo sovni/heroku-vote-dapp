@@ -14,7 +14,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
-    "primeflex": "^3.1.0",
+    "primeflex": "^2.0.0",
     "primeicons": "^4.1.0",
     "primevue": "^2.6.0",
     "vue": "^2.5.2",
