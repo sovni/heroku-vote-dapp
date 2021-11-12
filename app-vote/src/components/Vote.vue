@@ -179,7 +179,7 @@ export default {
             this.updateNumberVoters();
           }
           else if (this.votingStatus == 1) {
-            this.updateVotingStatus();
+            this.initProposalList();
           }
           else if (this.votingStatus == 5) {
             this.updateWinningVote();
@@ -324,7 +324,15 @@ export default {
           for (let i=1;i<=nbProposal;i++) {
             window.bc.contract().getProposal(i, (err, strProposal) => {
               console.log(strProposal);
-              this.proposals.push({name: strProposal, id: i});
+              var found=false;
+              for (let j=0;j<this.proposals.length;j++) {
+                if (this.proposals[j].id == i) {
+                  found = true;
+                  break;
+                }
+              }  
+              if (!found)
+                this.proposals.push({name: strProposal, id: i});
             });
           }
         });          
