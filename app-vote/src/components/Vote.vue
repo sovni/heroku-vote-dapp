@@ -242,6 +242,7 @@ export default {
       }
     },
     nextPhase() {
+      this.msgStatus = "";
       if (this.blockchainIsConnected()) {
         window.bc.getMainAccount()
         .then(account => {
