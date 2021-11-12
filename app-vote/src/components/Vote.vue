@@ -34,7 +34,6 @@
                 <InputText v-model="voterAddress" style="width:400px" type="text"/>
                 <Button label="Enregistrer" class="p-button-sm p-ml-2"  @click="registerVoter()"/>
             </form>        
-            <div> {{ msgStatus }} </div>
           </template>
           <template #footer>
             <Button label="Start Proposal Phase" @click="nextPhase()" class="p-mt-2" />
@@ -58,10 +57,10 @@
             Register new Proposal
           </template>
           <template #content>    
-          <form >
+            <form >
               <InputText v-model="voterProposal" style="width:400px" type="text" class="m-t-2"/>
               <Button label="Enregistrer" class="p-button-sm p-ml-2"  @click="registerProposal()"/>
-          </form>
+            </form>
           </template>
           <template #footer>
             <Button label="Finish Proposal Phase" @click="nextPhase()" class="p-mt-2" />
@@ -121,6 +120,7 @@
         </template>
       </Card>
     </div>
+    <div> {{ msgStatus }} </div>
 
   </div>
 </template>
@@ -175,7 +175,13 @@ export default {
         window.bc.contract().getVotingStatus((err, status) => {
           this.updateVotingStatus(status);
           this.statusList[status].icon = 'pi pi-circle-on';
-          if (this.votingStatus == 5) {
+          if (this.votingStatus == 0) {
+            this.updateNumberVoters();
+          }
+          else if (this.votingStatus == 1) {
+            this.updateVotingStatus();
+          }
+          else if (this.votingStatus == 5) {
             this.updateWinningVote();
           }
         });
