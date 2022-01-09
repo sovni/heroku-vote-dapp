@@ -1,5 +1,5 @@
 import BcExplorer from './BcExplorer'
-import VotingContract from '../../../build/contracts/Voting.json';
+import VotingContract from '../../contracts/Voting.json';
 
 export default {
     data() {
