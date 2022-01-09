@@ -39,17 +39,6 @@ export default {
                     } else {
                         this.bcConnectionError = false;
                         this.bcConnected = this.blockchainIsConnected();                        // calling a smart contract function in order to check the contract address
-                        // is correct. NOTE: here you might be connected successfully.
-                        // TODO: the check of the smart contract address validity it should be BcExplorer duty
-                        /*this.isRegistered()
-                        .then(res => {
-                            this.bcConnectionError = false;
-                            this.bcConnected = this.blockchainIsConnected();
-                        })
-                        .catch(error => {
-                            this.showConnectionErrorMessage(error);
-                            this.bcSmartContractAddressError = true;
-                        });*/
                     }
                 })
                 .catch(error => this.showConnectionErrorMessage(error));
